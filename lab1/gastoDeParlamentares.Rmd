@@ -1,0 +1,73 @@
+---
+title: "Gastos de Parlamentares"
+author: "Rafael R. Fontenele"
+date: "16 March 2016"
+output: html_document
+---
+
+```{r, echo=FALSE,include=FALSE}
+library("dplyr")
+library("plyr")
+library("ggplot2")
+data <- read.csv("AnoAtual.csv")
+```
+
+## R Markdown
+  
+  Escolha um subconjunto das variáveis que você considera interessante para investigar como nossos deputados gastam sua verba e comente qual a distribuição dos dados dessas variáveis, em termos de centralidade, extremos, concentração e simetria.  
+  Há algo surpreendente ou estranho nos dados?  
+  Como você sugere que um analista de dados lide com a parte surpreendente/estranha?
+  
+  O subconjunto que irei utilizar para investigar como nossos deputados gastam sua verba, será formado pelas variáveis que considerei interessantes, descritas abaixo:
+  
+  + txNomeParlamentar: Nome adotado pelo Parlamentar.  
+    Será util para identificar cada parlamentar e irá possibilitar obter              informações de como cada parlamentar está gastando sua cota mensal. 
+
+```{r,echo=FALSE}
+#HISTOGRAM
+freqParlamentares <- count(data, c('txNomeParlamentar'))    
+mean_global <- mean(freqParlamentares$freq)
+median_global <- median(freqParlamentares$freq)
+
+freqParlamentares %>%
+  ggplot(aes(freq)) +
+  geom_vline(xintercept = mean_global, colour = "red") +
+  geom_vline(xintercept = median_global, colour = "blue") +
+  geom_histogram(colour= "black", fill= "light green", binwidth = 3)
+```
+
+
+```{r,echo=FALSE}
+#BOXPLOT
+  ggplot(freqParlamentares,aes(x=factor(0),y=freq))+
+  labs(title= "", x="",y="Frequência")+
+  geom_smooth(stat = "identity") +
+  geom_boxplot(outlier.shape = NA, width= .7)+
+  geom_jitter(stat = "identity",alpha=0.3,size=1,width = .7) 
+```
+  
+  + sgUF: Representa a unidade da federação pela qual o parlamentar foi eleito.  
+    Essa variável importante para agrupar as informações obtidas e entender como      os parlamentares de cada estado gastam as verbas parlamentares.
+    
+  + sgPartido: O seu conteúdo representa a sigla do partido que o parlamentar         representa.  
+    Essa variável importante para agrupar as informações obtidas e entender como      os parlamentares de cada partido gastam as verbas parlamentares.
+  
+  + vlrLiquido: O seu conteúdo representa o valor líquido do documento fiscal ou      do documento que deu causa à despesa. É este valor que será debitado da cota      do deputado.   
+  
+  + txtBeneficiario: Representa o nome do fornecedor do produto ou serviço            presente no documento fiscal.  
+    Variável é interessante para identificar quem são os beneficiários, ou seja,  
+    quem recebe o dinheiro, empresa ou pessoa.  
+  
+  + txtDescricao: O seu conteúdo é a descrição do Tipo de Despesa relativo à          despesa em questão.  
+    Considerei importante para coletar informações sobre quais são os tipos de        despesas dos parlamentares, entender com o que eles mais gastam.
+  
+  + txtNumero: Representa o número de face do documento fiscal emitido ou o número     do documento que deu causa à despesa debitada na cota do deputado.  
+    Considerei essa variável interessante por considerar importante a comprovação     das despesas e analisar o número de gastos que não informam um documento          fiscal ou comprovante dos gastos e qual o tipo desses gastos.
+  
+  + datEmissao: O conteúdo deste dado é a data de emissão do documento fiscal ou a     data do documento que tenha dado causa à despesa.  
+    Importante para verificar as datas dos gastos dos parlamentares.
+    
+2. Responda:
+  + Em que tipo de despesas nossos parlamentares gastam mais recursos de sua cota?
+  + Quais tipos de despesas têm despesas que mais variam, e que são mais desiguais?
+  
